@@ -1,0 +1,50 @@
+---
+# Play this on a specific running server to start serving datasets in VCL.
+# http://stackoverflow.com/questions/25774739/attach-ebs-volume-with-packer-during-build-time/25941363#25941363
+# For AWS credentials the builder needs to create instance with proper role (instance profile)
+# http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ExamplePolicies_EC2.html#ex4
+# http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html
+# https://help.ubuntu.com/14.04/serverguide/network-file-system.html
+# see group_vars/vcl for datasets variable
+- name: Install packages
+  apt: pkg={{ item }} state=installed update_cache=true
+  with_items:
+    # - python
+    # - python-pip
+    - nfs-kernel-server
+
+# - name: Install AWS CLI
+#   shell: pip -q install awscli
+
+# Mount ENRON Emails and other EBS Volume datasets
+# requires an instance profile that allows attach-volume action
+# - name: Get instance_id from EC2 meta-data service.
+#   shell: wget -q -O - http://169.254.169.254/latest/meta-data/instance-id
+#   register: instance_id
+#
+# - name: Attach volumes to instance using CLI.
+#   shell: aws ec2 attach-volume --volume-id {{ item.volume }} --instance-id {{ instance_id.stdout }} --device {{ item.device }}
+#   with_items: "{{ datasets }}"
+
+- name: mount as normal (have it sleep for a few seconds before mounting)
+  shell: sleep 10
+
+- name: create block device mount points
+  file: dest={{ item.mount }} directory=yes mode=0777
+  with_items: "{{ datasets }}"
+
+- name: add to fstab
+  lineinfile: dest=/etc/fstab line={{ item.device }}  {{ item.mount }}  ext3  ro  0  0
+  with_items: "{{ datasets }}"
+
+- name: mount the drive
+  shell: mount {{ item.mount }}
+  with_items: "{{ datasets }}"
+
+- name: configure NFS server
+  lineinfile: dest=/etc/exports line={{ item.mount }}  *(ro,sync,no_root_squash)
+  with_items: "{{ datasets }}"
+
+- name: start NFS server
+  service: name=nfs-kernel-server enabled=yes
+- service: name=nfs-kernel-server state=restarted

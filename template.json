@@ -1,0 +1,43 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "availability_zone": "us-east-1c",
+      "source_ami": "ami-7b6cb610",
+      "instance_type": "t2.medium",
+      "ssh_username": "ubuntu",
+      "ami_name": "VCL Network File Server {{timestamp}}",
+      "tags": {
+        "OS_Version": "Ubuntu",
+        "Release": "Vivid 15.04"
+      },
+      "ami_block_device_mappings": [
+        {
+          "device_name": "xvdf",
+          "virtual_name": "enron",
+          "snapshot_id": "",
+          "volume_type": "standard",
+          "delete_on_termination": "yes"
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+    "type": "shell",
+    "inline": [
+      "sudo apt-get update",
+      "sudo apt-get -y upgrade",
+      "sudo apt-get install -y ansible"]
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "ansible/site.yml",
+      "playbook_dir": "ansible",
+      "inventory_groups": "vcl",
+      "extra_arguments": "",
+      "inventory_file": "/home/jansen/Dropbox/UMD-DCIC/Amazon/hosts"
+    }
+  ]
+}
