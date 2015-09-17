@@ -1,5 +1,5 @@
 ---
-- hosts: test2
+- hosts: all
   remote_user: ubuntu
   sudo: yes
   gather_facts: yes

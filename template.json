@@ -16,11 +16,12 @@
         {
           "device_name": "xvdf",
           "virtual_name": "enron",
-          "snapshot_id": "",
+          "snapshot_id": "snap-63b8f300",
           "volume_type": "standard",
-          "delete_on_termination": "yes"
+          "delete_on_termination": "true"
         }
-      ]
+      ],
+      "force_deregister": "true"
     }
   ],
   "provisioners": [
@@ -35,8 +36,8 @@
       "type": "ansible-local",
       "playbook_file": "ansible/site.yml",
       "playbook_dir": "ansible",
+      "group_vars": "/home/jansen/Dropbox/UMD-DCIC/Amazon/group_vars",
       "inventory_groups": "vcl",
-      "extra_arguments": "",
       "inventory_file": "/home/jansen/Dropbox/UMD-DCIC/Amazon/hosts"
     }
   ]
