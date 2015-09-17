@@ -7,7 +7,7 @@
       "source_ami": "ami-7b6cb610",
       "instance_type": "t2.medium",
       "ssh_username": "ubuntu",
-      "ami_name": "VCL Network File Server {{timestamp}}",
+      "ami_name": "VCL Datasets File Server {{isotime \"2006-01-02\"}}",
       "tags": {
         "OS_Version": "Ubuntu",
         "Release": "Vivid 15.04"
